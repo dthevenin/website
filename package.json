@@ -18,7 +18,7 @@
   "scripts": {
     "docker-dev": "jekyll serve --config /srv/jekyll/configs/dev.yml -s /srv/jekyll/site --incremental",
     "assemble": "rm -rf dist && mkdir dist && cp -r site/* dist/ && cp configs/dev.yml dist/_config.yml",
-    "deploy": "yarn run assemble && gh-pages --dist dist --remote prod"
+    "deploy": "yarn run assemble && gh-pages --dist dist --remote prod --branch master"
   },
   "babel": {
     "plugins": [
