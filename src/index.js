@@ -1,0 +1,1 @@
+import './photoScroll/index';
