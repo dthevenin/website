@@ -93,9 +93,9 @@ function () {
       var buttonRight = document.querySelector('.button-right');
       buttonLeft.style.display = 'none';
       buttonRight.style.display = 'none';
-      this.fullScreen = document.querySelector('.full-screen');
+      this.mainView = document.querySelector('.full-screen');
       this.slideShow = document.querySelector('.slide-show');
-      this.fullScreen.style.display = 'block';
+      this.mainView.style.display = 'block';
       this.slideShow.style.display = 'none';
     }
   }, {
@@ -109,23 +109,24 @@ function () {
     key: "hide",
     value: function hide() {
       this.stopAutoscroll();
-      this.fullScreen.style.display = 'none';
+      this.mainView.style.display = 'none';
     }
   }, {
     key: "show",
     value: function show() {
       this.startAutoscroll();
-      this.fullScreen.style.display = 'block';
+      this.mainView.style.display = 'block';
     }
   }, {
     key: "_resizeImage",
-    value: function _resizeImage(image) {
+    value: function _resizeImage(img) {
+      var image = img;
       if (!image) return;
-      var width = image.offsetWidth,
-          height = image.offsetHeight;
-      var _this$fullScreen = this.fullScreen,
-          offsetWidth = _this$fullScreen.offsetWidth,
-          offsetHeight = _this$fullScreen.offsetHeight;
+      var width = image.width,
+          height = image.height;
+      var _this$mainView = this.mainView,
+          offsetWidth = _this$mainView.offsetWidth,
+          offsetHeight = _this$mainView.offsetHeight;
       var imageRatio = width / height;
       var spaceRatio = offsetWidth / offsetHeight;
       var delta = 0,
@@ -158,7 +159,7 @@ function () {
       var _this2 = this;
 
       // remove all previous photos
-      this.fullScreen.textContent = ''; // reset data
+      this.mainView.textContent = ''; // reset data
 
       this.currentPhotoIdx = 0;
       this.nextPhotoToLoadIdx = 0;
@@ -169,13 +170,13 @@ function () {
       this.secondImage = document.createElement('img');
       this.secondImage.className = 'photo';
       this.secondImage.style.opacity = '1';
-      this.fullScreen.appendChild(this.mainImage);
-      this.fullScreen.appendChild(this.secondImage);
+      this.mainView.appendChild(this.mainImage);
+      this.mainView.appendChild(this.secondImage);
       this.listImages = [];
       (0, _photosLoader.loadPhotos)(list, function (image) {
         _this2.listImages.push(image);
 
-        if (_this2.listImages.length == 1) {
+        if (_this2.listImages.length === 1) {
           _this2.showPhoto(0);
 
           _this2.startAutoscroll();
@@ -200,14 +201,16 @@ function () {
     }
   }, {
     key: "showPhoto",
-    value: function showPhoto(idx) {
+    value: function showPhoto(n) {
       var nbImage = this.listImages.length;
-      var n = (idx + nbImage) % nbImage;
-      var image = this.listImages[n];
+      var idx = (n + nbImage) % nbImage;
+      var image = this.listImages[idx];
       this.secondImage.src = image.src;
+      this.secondImage.width = image.naturalWidth;
+      this.secondImage.height = image.naturalHeight;
       this.secondImage.style.opacity = '1';
       this.mainImage.style.opacity = '0';
-      this.currentPhotoIdx = n;
+      this.currentPhotoIdx = idx;
       this.resizeImage();
       var temp = this.mainImage;
       this.mainImage = this.secondImage;
@@ -415,9 +418,7 @@ function () {
       var _this2 = this;
 
       var imageData = this.photoData.images[this.nextPhotoToLoadIdx++];
-      (0, _photosLoader.loadPhoto)(this.photoData.imagePath, imageData.name).then(function (image) {
-        var img = document.createElement('img');
-        img.src = image.src;
+      (0, _photosLoader.loadPhoto)(this.photoData.imagePath, imageData.name).then(function (img) {
         img.className = 'photo';
 
         _this2.photosDiv.appendChild(img);
@@ -431,14 +432,19 @@ function () {
   }, {
     key: "showPhoto",
     value: function showPhoto(n) {
+      var _this3 = this;
+
       var listImages = document.querySelectorAll('.photos .photo');
-      n = (n + listImages.length) % listImages.length;
-      var selectedPhoto = listImages.item(n);
+      var idx = (n + listImages.length) % listImages.length;
+      var selectedPhoto = listImages.item(idx);
       var firstPhoto = listImages.item(0);
       var tx = selectedPhoto.offsetLeft - firstPhoto.offsetLeft;
       this.photosDiv.style.transform = "translate(-".concat(tx, "px)");
-      this.currentPhotoIdx = n;
+      this.currentPhotoIdx = idx;
       if (this.shouldLoadNextPhoto()) this.loadNextPhoto();
+      this.photosDiv.addEventListener('transitionend', function () {
+        if (_this3.shouldLoadNextPhoto()) _this3.loadNextPhoto();
+      }, false);
     }
   }, {
     key: "scrollLeft",
@@ -511,12 +517,11 @@ var loadPhoto = function loadPhoto(path, name) {
   return new Promise(function (resolve, reject) {
     var image = new Image();
     var filePath = path + name;
+    image.src = filePath;
 
     image.onload = function () {
       return resolve(image);
     };
-
-    image.src = filePath;
 
     image.onabort = function () {
       return reject();
