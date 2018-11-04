@@ -23,9 +23,9 @@ class HomeScroll {
     buttonLeft.style.display = 'none';
     buttonRight.style.display = 'none';
 
-    this.fullScreen = document.querySelector('.full-screen');
+    this.mainView = document.querySelector('.full-screen');
     this.slideShow = document.querySelector('.slide-show');
-    this.fullScreen.style.display = 'block';
+    this.mainView.style.display = 'block';
     this.slideShow.style.display = 'none';
   }
 
@@ -41,18 +41,18 @@ class HomeScroll {
 
   hide() {
     this.stopAutoscroll();
-    this.fullScreen.style.display = 'none';
+    this.mainView.style.display = 'none';
   }
 
   show() {
     this.startAutoscroll();
-    this.fullScreen.style.display = 'block';
+    this.mainView.style.display = 'block';
   }
 
   _resizeImage(image) {
     if (!image) return;
-    const { offsetWidth: width, offsetHeight: height } = image;
-    const { offsetWidth, offsetHeight } = this.fullScreen;
+    const { width, height } = image;
+    const { offsetWidth, offsetHeight } = this.mainView;
     const imageRatio = width / height;
     const spaceRatio = offsetWidth / offsetHeight;
 
@@ -84,7 +84,7 @@ class HomeScroll {
 
   setupPhotoShow(list) {
     // remove all previous photos
-    this.fullScreen.textContent = '';
+    this.mainView.textContent = '';
 
     // reset data
     this.currentPhotoIdx = 0;
@@ -99,14 +99,14 @@ class HomeScroll {
     this.secondImage.className = 'photo';
     this.secondImage.style.opacity = '1';
 
-    this.fullScreen.appendChild(this.mainImage);
-    this.fullScreen.appendChild(this.secondImage);
+    this.mainView.appendChild(this.mainImage);
+    this.mainView.appendChild(this.secondImage);
 
     this.listImages = [];
 
     loadPhotos(list, image => {
       this.listImages.push(image);
-      if (this.listImages.length == 1) {
+      if (this.listImages.length === 1) {
         this.showPhoto(0);
         this.startAutoscroll();
       }
@@ -131,6 +131,8 @@ class HomeScroll {
     const image = this.listImages[n];
 
     this.secondImage.src = image.src;
+    this.secondImage.width = image.naturalWidth;
+    this.secondImage.height = image.naturalHeight;
     this.secondImage.style.opacity = '1';
     this.mainImage.style.opacity = '0';
 
