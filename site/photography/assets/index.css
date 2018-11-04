@@ -7,6 +7,7 @@ html,
 body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 .blackUI {
   color: #fbfbfb;
@@ -158,4 +159,19 @@ section.full-screen > .photo {
   background-color: black;
 }
 /* Portrait */
+
+@media (max-width: 400px) {
+  body header {
+    padding: 5px;
+  }
+}
 /* Landscape */
+
+@media (max-width: 7680px) and (orientation: landscape) {
+
+  article {
+    padding: 0;
+  }
+}
+
+
