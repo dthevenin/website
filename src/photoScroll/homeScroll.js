@@ -49,7 +49,8 @@ class HomeScroll {
     this.mainView.style.display = 'block';
   }
 
-  _resizeImage(image) {
+  _resizeImage(img) {
+    const image = img;
     if (!image) return;
     const { width, height } = image;
     const { offsetWidth, offsetHeight } = this.mainView;
@@ -125,10 +126,10 @@ class HomeScroll {
     this.interval = 0;
   }
 
-  showPhoto(idx) {
+  showPhoto(n) {
     const nbImage = this.listImages.length;
-    const n = (idx + nbImage) % nbImage;
-    const image = this.listImages[n];
+    const idx = (n + nbImage) % nbImage;
+    const image = this.listImages[idx];
 
     this.secondImage.src = image.src;
     this.secondImage.width = image.naturalWidth;
@@ -136,7 +137,7 @@ class HomeScroll {
     this.secondImage.style.opacity = '1';
     this.mainImage.style.opacity = '0';
 
-    this.currentPhotoIdx = n;
+    this.currentPhotoIdx = idx;
     this.resizeImage();
     const temp = this.mainImage;
     this.mainImage = this.secondImage;
