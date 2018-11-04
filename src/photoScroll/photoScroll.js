@@ -42,7 +42,6 @@ class PhotoScroll {
     return this[SINGLETON];
   }
 
-
   hide() {
     this.slideShow.style.display = 'none';
   }
@@ -101,9 +100,7 @@ class PhotoScroll {
   loadNextPhoto() {
     const imageData = this.photoData.images[this.nextPhotoToLoadIdx++];
     loadPhoto(this.photoData.imagePath, imageData.name)
-      .then(image => {
-        const img = document.createElement('img');
-        img.src = image.src;
+      .then(img => {
         img.className = 'photo';
         this.photosDiv.appendChild(img);
         setTimeout(() => {
@@ -116,15 +113,18 @@ class PhotoScroll {
   showPhoto(n) {
     const listImages = document.querySelectorAll('.photos .photo');
 
-    n = (n + listImages.length) % listImages.length;
+    const idx = (n + listImages.length) % listImages.length;
 
-    const selectedPhoto = listImages.item(n);
+    const selectedPhoto = listImages.item(idx);
     const firstPhoto = listImages.item(0);
     const tx = selectedPhoto.offsetLeft - firstPhoto.offsetLeft;
     this.photosDiv.style.transform = `translate(-${tx}px)`;
-    this.currentPhotoIdx = n;
+    this.currentPhotoIdx = idx;
 
     if (this.shouldLoadNextPhoto()) this.loadNextPhoto();
+    this.photosDiv.addEventListener('transitionend', () => {
+      if (this.shouldLoadNextPhoto()) this.loadNextPhoto();
+    }, false);
   }
 
   scrollLeft() {
